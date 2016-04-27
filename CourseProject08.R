@@ -89,7 +89,7 @@ confusionMatrix(predictTrain3, training$classe)
 predictValidate3 <- predict(pcaModel,newdata = validatePC)
 confusionMatrix(predictValidate3, validate$classe)
 
-##################### Cross-validation ####################### 96% !!!!! WOW !!!!!
+##################### Cross-validation ####################### 99,7%
 
 set.seed(753)
 
@@ -99,7 +99,7 @@ set.seed(753)
 fitControl <- trainControl(method = "cv", number = 4)
 
 # We provide additionnal parameters to gbm, not far from default ones
-#### !!!! There are some problems with parameters!!!! Function needs 4! params!!!!
+
 gbmGrid <-  expand.grid(interaction.depth = c(1, 5, 9),
                         n.trees = (1:15)*100,
                         shrinkage = 0.1,
@@ -115,7 +115,7 @@ confusionMatrix(predictTrain4, training$classe)
 predictValidate4 <- predict(cvModel,newdata = validate)
 confusionMatrix(predictValidate4, validate$classe)
 
-################ Random forest #######################
+################ Random forest ####################### 99,3%
 
 ## library(doMC)
 ## registerDoMC(cores = 4)
@@ -129,6 +129,7 @@ confusionMatrix(predictTrain5, training$classe)
 predictValidate5 <- predict(rfModel,newdata = validate)
 confusionMatrix(predictValidate5, validate$classe)
 
+############## Load and prepare testing dataset ##############################
 
 if (! file.exists("plm-testing.csv")) {
       url <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv" 
@@ -142,15 +143,12 @@ testing <- testing[,!nsv$nzv]
 
 dim(testing)
 
+## Prediction for testing dataset 
 predictTest6 <- predict(rfModel,newdata = testing)
 confusionMatrix(predictTest6, testing$classe)
 predictTest6
 
+predictTest7 <- predict(cvModel,newdata = testing)
+confusionMatrix(predictTest7, testing$classe)
+predictTest7
 
-### Predict
-## testPC <- predict(preProc,log10(testing[,-58]+1))
-## confusionMatrix(testing$type,predict(modelFit,testPC)) 
- 
-## altered
-## modelFit <- training(training$type ~ .,method="glm",preProcess="pca",data=training)
-##log confusionMatrix(testing$type,predict(modelFit,testing))
